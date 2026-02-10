@@ -3,7 +3,7 @@ name: Deloitte Edinburgh/Glasgow Jobs Monitor
 on:
   workflow_dispatch:
   schedule:
-    - cron: "15 8 * * *"
+    - cron: "15 8 * * *"   # 08:15 UTC daily
 
 permissions:
   contents: write
@@ -29,4 +29,16 @@ jobs:
           pip install -r requirements.txt
           python -m playwright install --with-deps chromium
 
-      - name: Run moni
+      - name: Run monitor
+        id: run_monitor
+        run: |
+          python monitor_deloitte_jobs.py
+
+      - name: Upload diagnostics (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostics
+          path: .state/
+
+      - name: Create Git
